@@ -163,6 +163,18 @@ class MyWindow:
         list_of_listboxes.append(delete_listbox)
 
 
+### Delete Function ###
+def deleteData():
+    while True:
+        to_delete = input("Please type the contents of the cell you wish to delete: ")
+        # Checks if input matches data in an existing cell
+        if to_delete in user_data:
+            user_data.remove(to_delete)
+            print("{} was removed successfully.".format(to_delete))
+            return user_data
+        print("{} could not be found in the data set. Please try again.".format(to_delete))
+
+
 #%%
 
         #######################
@@ -178,7 +190,23 @@ class MyWindow:
         for item in field_list:
             rename_listbox.insert(tk.END, item)
 
-        list_of_listboxes.append(rename_listbox)
+        list_of_listboxes.append(rename_listbox
+
+
+### Rearrange Function ###
+def renameColumn():
+    while True:
+        column_name = input("Please type the name of the column you wish to rename: ")
+            # Checks if input matches an existing column name
+            if column_name in user_data:
+                # Ask user for replacement value
+                new_column_name = input("Please enter a new name for the {} column: ".format(column_name))
+                # Assign the new value to the column's name field
+                replaced = [user_data.replace(column_name, new_column_name) for item in user_data]
+                print("Success! Column {} has been renamed to {}.".format(column_name, new_column_name))
+                return replaced
+            # If the input has no match, returns to input request
+            print("A column named \"{}\" could not be found. Please try again.".format(column_name))
 
 #%%
 
@@ -188,6 +216,22 @@ class MyWindow:
         # Adds tab 2 of the notebook
         rearrange_tab = ttk.Frame(nb)
         nb.add(rearrange_tab, text='Rearrange')
+
+
+### Rearrange Function ###
+def rearrangeData():
+    while True:
+        # Asks user to re-order columns into desired arrangement via list indices
+        new_order_list = [int(x) for x in input("Data columns are numbered beginning from zero. Thus, five columns would be numbered " +
+        "by 0 through 4. Enter your new desired order, separated by spaces (ex: 1 3 0 2 4). Please only enter numbers: ").split()]
+        # Checks if all items entered into list are integers
+        if all(isinstance(x, int) for x in new_order_list):
+            reordered = [reordered[i] for i in new_order_list]
+            # Returns user's desired arrangement
+            return reordered
+        # If they're not all integers, returns to input request
+        print("There's an invalid item in your order entry. Please use only integers and try again.")
+
 
 #%%
 
@@ -199,6 +243,33 @@ class MyWindow:
         nb.add(filter_tab, text='Filter')
 
 
+### Filter Function ###
+def filterData():
+    while True:
+        filter_key = input("Enter a word, character or number to filter by: ")
+        # Check if filter_key is an integer. If so, the try block executes.
+        try:
+            val = int(filter_key)
+            # If value exists in list
+            if val in user_data:
+                print("Finding all instances of {}.".format(val))
+                filtered_output = list(filter(lambda x: x == val, user_data))
+                return filtered_output
+            else:
+                print("Sorry, but {} was not found in the data.".format(val))
+                continue
+        # If input is not an integer, exception block executes.
+        except valueError:
+            val = filter_key
+            # If value exists in list
+            if val in user_data:
+                print("Finding all instances of {}.".format(val))
+                filtered_output = list(filter(lambda x: x == val, user_data))
+                return filtered_output
+            else:
+                print("Sorry, but {} was not found in the data.".format(val))
+                continue
+
 #%%
 
         #######################
@@ -209,7 +280,20 @@ class MyWindow:
         nb.add(sort_tab, text='Sort')
 
 
-
+### Sort Function ###
+def sortData():
+    while True:
+        sort_preference = input("Sort data in Ascending or Descending order? (A/D): ")
+        #Ascending Order sort
+        if sort_preference == 'A' or sort_preference == 'a':
+            user_data.sort()
+            return user_data
+        #Descending Order sort
+        elif sort_preference == 'D' or sort_preference == 'd'
+            user_data.sort(reverse=True)
+            return user_data
+        # If input is invalid
+        print("Invalid entry. Please enter \'A\' for Ascending or \'D\' for Descending.")
 
 
 #%%
@@ -230,4 +314,3 @@ if __name__ == '__main__':
     top = MyWindow(root)
 
     root.mainloop()
-
