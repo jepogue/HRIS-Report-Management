@@ -166,13 +166,13 @@ class MyWindow:
 ### Delete Function ###
 def deleteData():
     while True:
-        to_delete = input("Please type the contents of the cell you wish to delete: ")
+        to_delete = input("Please type the name of the column you wish to delete: ")
         # Checks if input matches data in an existing cell
         if to_delete in user_data:
             user_data.remove(to_delete)
-            print("{} was removed successfully.".format(to_delete))
+            print("The {} column was removed successfully.".format(to_delete))
             return user_data
-        print("{} could not be found in the data set. Please try again.".format(to_delete))
+        print("A column called \"{}\" could not be found in the data set. Please try again.".format(to_delete))
 
 
 #%%
@@ -193,7 +193,7 @@ def deleteData():
         list_of_listboxes.append(rename_listbox
 
 
-### Rearrange Function ###
+### Rename Function ###
 def renameColumn():
     while True:
         column_name = input("Please type the name of the column you wish to rename: ")
