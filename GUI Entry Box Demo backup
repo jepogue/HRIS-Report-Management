@@ -118,10 +118,6 @@ class MyWindow:
         self.filename = None
         self.df = None
 
-#        scroll = Scrollbar(root)
-#        scroll.grid(column = 50)
-
-#        tree = ttk.Treeview(self.parent)
 
 
         top_frame = tk.Frame(self.parent)
@@ -129,21 +125,12 @@ class MyWindow:
 
         self.text = tk.Text(top_frame)
         self.text.pack(side=tk.TOP)
-#
-#        self.text = tk.Text(self.parent)
-#        self.text.pack(side=tk.TOP)
-
 
         bottom_frame = tk.Frame(self.parent)
         bottom_frame.pack(side = tk.BOTTOM)
 
-
-#        radio1 = tk.Radiobutton(self.parent, text = "Delete")
-#        radio1.grid(row=0,column=0)
-
         self.button = tk.Button(bottom_frame, text='Load File', command=self.load)
         self.button.pack(side = tk.LEFT)
-
 
         self.button = tk.Button(bottom_frame, text='Display Data', command=self.display)
         self.button.pack(side = tk.LEFT)
@@ -157,16 +144,14 @@ class MyWindow:
         self.button = tk.Button(bottom_frame, text='Delete Field', command=self.delete_field)
         self.button.pack(side = tk.LEFT)
 
-        self.button = tk.Button(bottom_frame, text='Filter a field', command=self.filter_field)
+        self.button = tk.Button(bottom_frame, text='Filter field', command=self.filter_field)
         self.button.pack(side = tk.LEFT)
 
-#        preview_file =
-#        self.button = tk.Button(self.parent, text='Preview', command=self.Preview)
-#        self.button.grid()
+        self.button = tk.Button(bottom_frame, text='Rename field', command=self.rename_field)
+        self.button.pack(side = tk.LEFT)
 
-
-#    def preview(self):
-#        if self.df is not None:
+        self.button = tk.Button(bottom_frame, text='Sort field', command=self.sort_field)
+        self.button.pack(side = tk.LEFT)
 
     def create_field_list(self):
         if self.df is not None:
@@ -200,19 +185,14 @@ class MyWindow:
                 self.df = pd.read_excel(name)
             #save the filename for reference
             self.filename = name
-#            self.display()
-#            self.make_columns
+            self.display()
+
 
     def display(self):
         #clear field first
         self.text.delete(1.0,END)
         #make sure there's a dataframe loaded, otherwise, do nothing
         if self.df is not None:
-            #this just keeps displaying a new head below the last
-            #we want to remove the existing and then display
-            #leave it for testing though, you can see the changes this way
-#            self.text.insert('end', self.filename + '\n')
-#            self.text.insert('end', str(self.df.head(20)) + '\n')
             self.text.insert('end', str(self.df) + '\n')
 
 
@@ -220,7 +200,7 @@ class MyWindow:
 
         #make sure there's a daaframe loaded, otherwise, do nothing
         if self.df is not None:
-            group_field = simpledialog.askstring("Input", "Which field to group by?",
+            group_field = simpledialog.askstring("Group By", "Which field to group by?",
                                 parent=self.parent)
             self.df = self.df.groupby(group_field).count()
         self.display()
@@ -229,27 +209,20 @@ class MyWindow:
 
         #make sure there's a dataframe loaded, otherwise, do nothing
         if self.df is not None:
-            listbox = tk.Listbox(self.parent,selectmode='extended')
-            listbox.grid(row=0,column=0)
-            field_list = self.create_field_list
+            index_field = simpledialog.askstring("Pivot", "Rows?",
+                                                 parent=self.parent)
+            column_field = simpledialog.askstring("Pivot", "Columns?",
+                                                 parent=self.parent)
+            pivot_values = simpledialog.askstring("Pivot", "Values?",
+                                parent=self.parent)
+            #agg_func isn't working when passed into the pivot function - don't know how this can be done
+#            agg_func = simpledialog.askstring("Pivot", "What aggregation? Count, Sum, Max, Min, etc",
+#                                              parent=self.parent)
 
-            for item in [field_list]:
-                listbox.insert(END, item)
+            self.df = pd.pivot_table(self.df, index=index_field, columns=column_field, values = pivot_values,
+                                     dropna=False,aggfunc='count')
 
-
-
-
-#            index = simpledialog.askstring("Input", "Rows?",
-#                                parent=self.parent)
-#            values = simpledialog.askstring("Input", "Values?",
-#                                parent=self.parent)
-
-            #need to figure out a way to ask what type of aggregation function
-
-            #create pivot
-#            self.df = pd.pivot_table(self.df, index=index, values = values, aggfunc='count', dropna=False)
-#        self.display()
-
+        self.display()
 
 
     def delete_field(self):
@@ -259,7 +232,7 @@ class MyWindow:
 #            field_list = self.create_field_list
 #            for item in [field_list]:
 #                listbox.insert(END, item)
-            field_name = simpledialog.askstring("Input", "Field to delete?",
+            field_name = simpledialog.askstring("Delete Field", "Field to delete?",
                                 parent=self.parent)
             self.df = self.df.drop(columns = field_name)
         self.display()
@@ -267,12 +240,38 @@ class MyWindow:
     def filter_field(self):
             #make sure there's a dataframe loaded, otherwise, do nothing
         if self.df is not None:
-            field_name = simpledialog.askstring("Input", "Field to filter?",
-                            parent=self.parent)
-            filter_value = simpledialog.askstring("Input", "Filter for what?",
-                            parent=self.parent)
+            field_name = simpledialog.askstring("Filter Field", "Field to filter?",
+                                                parent=self.parent)
+            filter_value = simpledialog.askstring("Filter Field", "Filter for what?",
+                                                  parent=self.parent)
             self.df = self.df[self.df[field_name] == filter_value]
-#                self.df = self.df.filter(like=filter_value, axis = 0)
+        self.display()
+
+
+    def rename_field(self):
+            #make sure there's a daaframe loaded, otherwise, do nothing
+        if self.df is not None:
+            field_name = simpledialog.askstring("Rename Field", "Field to rename?",
+                                                parent=self.parent)
+            rename_value = simpledialog.askstring("Rename Field", "Enter new name",
+                                                  parent=self.parent)
+            self.df.rename(columns={field_name:rename_value}, inplace=True)
+        self.display()
+
+    def sort_field(self):
+            #make sure there's a daaframe loaded, otherwise, do nothing
+        if self.df is not None:
+            field_name = simpledialog.askstring("Sort Field", "Field to sort?",
+                            parent=self.parent)
+            sort_preference = simpledialog.askstring("Sort Field",
+                                                     "Sort data in Ascending or Descending order? (A/D): ",
+                                                     parent=self.parent)
+            #Ascending Order sort
+            if sort_preference == 'A' or sort_preference == 'a':
+                self.df.sort_values(by=field_name, ascending=True, inplace=True, kind='mergesort')
+            #Descending Order sort
+            elif sort_preference == 'D' or sort_preference == 'd':
+                self.df.sort_values(by=field_name, ascending=False,inplace=True, kind='mergesort')
         self.display()
 
 #%%
