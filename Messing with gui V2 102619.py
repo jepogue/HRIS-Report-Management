@@ -206,7 +206,7 @@ class MyWindow:
     def display(self):
         #clear field first
         self.text.delete(1.0,END)
-        #make sure there's a daaframe loaded, otherwise, do nothing
+        #make sure there's a dataframe loaded, otherwise, do nothing
         if self.df is not None:
             #this just keeps displaying a new head below the last
             #we want to remove the existing and then display
@@ -227,7 +227,7 @@ class MyWindow:
 
     def pivot(self):
 
-        #make sure there's a daaframe loaded, otherwise, do nothing
+        #make sure there's a dataframe loaded, otherwise, do nothing
         if self.df is not None:
             listbox = tk.Listbox(self.parent,selectmode='extended')
             listbox.grid(row=0,column=0)
@@ -253,7 +253,7 @@ class MyWindow:
 
 
     def delete_field(self):
-        #make sure there's a daaframe loaded, otherwise, do nothing
+        #make sure there's a dataframe loaded, otherwise, do nothing
         if self.df is not None:
 #            listbox = Listbox(self,self.parent,selectmode='extended')
 #            field_list = self.create_field_list
@@ -265,7 +265,7 @@ class MyWindow:
         self.display()
 
     def filter_field(self):
-            #make sure there's a daaframe loaded, otherwise, do nothing
+            #make sure there's a dataframe loaded, otherwise, do nothing
         if self.df is not None:
             field_name = simpledialog.askstring("Input", "Field to filter?",
                             parent=self.parent)
