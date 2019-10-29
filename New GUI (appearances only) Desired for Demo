@@ -169,7 +169,15 @@ class MyWindow:
         #this will want to pop open another window
         button = tk.Button(bottom_frame, text='Create Template', command=load)
         button.pack(side = tk.LEFT)
-
+        
+        #this will want to pop open another window to pick a report to merge
+        button = tk.Button(bottom_frame, text='Merge Report', command=load)
+        button.pack(side = tk.LEFT)
+        
+        #this will prompt for the scheduler
+        button = tk.Button(bottom_frame, text='Schedule Report', command=load)
+        button.pack(side = tk.LEFT)
+        
 #        field_list = self.create_field_list
 
 #        field_list = ['ColumnA','ColumnB','ColumnC']
