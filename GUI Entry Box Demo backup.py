@@ -12,6 +12,7 @@ from tkinter import ttk
 from tkinter import filedialog as fd
 from tkinter import simpledialog
 from tkinter import messagebox
+from tkinter import scrolledtext
 
 #%%
 
@@ -124,7 +125,7 @@ class MyWindow:
         top_frame = tk.Frame(self.parent)
         top_frame.pack(side=tk.TOP)
 
-        self.text = tk.Text(top_frame)
+        self.text = scrolledtext.ScrolledText(top_frame)
         self.text.pack(side=tk.TOP)
 
         bottom_frame = tk.Frame(self.parent)
