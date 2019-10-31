@@ -13,6 +13,7 @@ from tkinter import filedialog as fd
 from tkinter import simpledialog
 from tkinter import messagebox
 from tkinter import scrolledtext
+import matplotlib.pyplot as plot
 
 #%%
 
@@ -286,13 +287,19 @@ class MyWindow:
             while True:
                 export_name = simpledialog.askstring("Input", "File name: ",
                     parent=self.parent)            
-                filetype_choice = simpledialog.askstring("Desired format", "Save as CSV or XLSX?",
+                filetype_choice = simpledialog.askstring("Desired format", "Save as CSV, XLSX, or PDF?",
                     parent=self.parent)
                 if filetype_choice == 'CSV' or filetype_choice == 'csv':
                     self.df.to_csv(export_name + '.csv', index=None, header=True)
                     return
                 elif filetype_choice == 'XLSX' or filetype_choice == 'xlsx':
                     self.df.to_excel(export_name + '.xlsx', sheet_name='ExportedData', index=False)
+                    return
+                elif filetype_choice == 'PDF' or filetype_choice == 'pdf':
+                    # self.df.to_html('out.html')
+                    pdf_name = export_name + '.pdf'
+                    plot = self.df.plot()
+                    plot.get_figure().savefig(pdf_name)
                     return
                 # If input file extension does not match    
                 messagebox.showerror("Error", "Invalid filetype. Please try again.", parent=self.parent)
