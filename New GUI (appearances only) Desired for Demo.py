@@ -5,6 +5,7 @@ import pandas as pd
 from pandas.api.types import CategoricalDtype
 import xlsxwriter
 from tkinter import *
+import Pmw
 
 import os
 import tkinter as tk
@@ -115,6 +116,9 @@ class MyWindow:
 #    pd.display.options.max_columns = 20
     pd.set_option("display.max_columns", 101)
     def __init__(self, parent):
+        
+        #initialize PMW module for scollable frame widget
+        Pmw.initialise(parent)
 
         def load(self):
         #get filename for opening
@@ -172,8 +176,12 @@ class MyWindow:
 
 #        field_list = self.create_field_list
 
+
+        self.sc = Pmw.ScrolledFrame(self.parent, usehullsize=1, hull_height = 450)
+        self.sc.pack(anchor = NW, fill = BOTH)
+
 #        field_list = ['ColumnA','ColumnB','ColumnC']
-        self.df = pd.read_csv(r'C:\Users\jpmul\Desktop\Test file.csv')
+        self.df = pd.read_csv(r'C:\Users\Jeremy\Desktop\A working file\Test file.csv')
         if self.df is not None:
             field_list = list(self.df.columns)
 
@@ -181,7 +189,7 @@ class MyWindow:
         #make buttons/boxes for every column, and display some records
             for field in field_list:
     #            left_frame = tk.Frame(self.parent,width=2,relief=tk.SUNKEN,highlightcolor='black')
-                left_frame = tk.LabelFrame(self.parent,text=field)
+                left_frame = tk.LabelFrame(self.sc.interior(),text=field)
                 left_frame.pack(side=tk.LEFT)
 
 
@@ -213,7 +221,7 @@ class MyWindow:
 
 
                 #create text area for display.  on top of current frame
-                self.text = tk.Text(left_frame,width=20)
+                self.text = tk.Text(left_frame,width=20, height = 17)
                 self.text.pack(side=tk.BOTTOM)
                 #for the current field, get the contents in a df
                 col_df = self.df[field]
