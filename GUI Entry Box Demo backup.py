@@ -2,10 +2,12 @@
 
 #%%
 import pandas as pd
+
 from pandas.api.types import CategoricalDtype
 import xlsxwriter
 from tkinter import *
-
+pd.get_option('display.max_columns')
+pd.set_option('display.max_columns',None)
 import os
 import tkinter as tk
 from tkinter import ttk
@@ -15,118 +17,33 @@ from tkinter import messagebox
 from tkinter import scrolledtext
 import matplotlib.pyplot as plot
 
-#%%
 
-def get_file_extension(filename):
-    #gives the file extension, without the period
-    file_extension = os.path.splitext(filename)[1][1:]
-    print(filename)
-    print(file_extension)
-    return file_extension
-
-
-#%%
-def create_original_df(filename):
-    #will need to determine filetype
-    file_extension = get_file_extension(filename)
-
-    if (file_extension == 'csv'):
-        original_df = pd.read_csv(filename)
-    elif (file_extension == 'xlsx'):
-        original_df = pd.read_excel
-    else:
-        #have to figure out what to return here, or do we somehow send back to file dialog?
-        return('Bad File Extension, please reselect file')
-
-    #we want to
-
-    #we want to return the original dataframe
-    return original_df
-
-
-#%%
-def get_filename():
-    #ideally, you would point this to the central repository
-        #right now it just opens in C:/
-#    fd.askopenfilename()
-
-    filename = fd.askopenfilename(filetypes = (("Excel files","*.xlsx"),(".csv files","*.csv")))
-#    print(filename)
-    #double check the file extension
-    file_extension = get_file_extension(filename)
-#    print(file_extension)
-
-    #loop until they pick a file or hit cancel
-        #i don't have the cancel part working, so it just keeps looping until they
-        #pick a good file
-    while file_extension not in ['csv','xlsx']:
-        #message box to return error or try again
-        filename = fd.askopenfilename()
-#        print(file_extension)
-        file_extension = get_file_extension(filename)
-#        print(filename)
-
-    #send filename to have the original file read into a df
-    create_original_df(filename)
-
-    #load into main view
-
-#create main window object
-    #i don't know what the screenName does
-
-#%%
-
-
-
-
-#main = Tk()
-#main.title('Notebook Demo')
-#main.geometry('750x750')
-#
-#
-## gives weight to the cells in the grid
-#rows = 0
-#while rows < 50:
-#    main.rowconfigure(rows, weight=1)
-#    main.columnconfigure(rows, weight=1)
-#    rows += 1
-#
-## Defines and places the notebook widget
-#nb = ttk.Notebook(main)
-#nb.pack()
-##nb.grid(row=1, column=0, columnspan=50, rowspan=49, sticky='NESW')
-#
-## Adds tab 1 of the notebook
-#page1 = ttk.Frame(nb)
-#nb.add(page1, text='Tab1')
-#
-## Adds tab 2 of the notebook
-#page2 = ttk.Frame(nb)
-#nb.add(page2, text='Tab2')
-#
-#
-#
-#main.mainloop()
 #%%
 
 class MyWindow:
 
 #    pd.set_option(display.max_columns = 20)
 #    pd.display.options.max_columns = 20
-    pd.set_option("display.max_columns", 101)
+#    pd.set_option("display.max_columns", 101)
+    pd.get_option('display.max_columns')
+    pd.set_option('display.max_columns',None)
+
+
     def __init__(self, parent):
 
         self.parent = parent
 
         self.filename = None
         self.df = None
-
+#        self.set_option('display.max_colwidth', 0)
 
 
         top_frame = tk.Frame(self.parent)
         top_frame.pack(side=tk.TOP)
 
-        self.text = scrolledtext.ScrolledText(top_frame)
+#        self.text = scrolledtext.ScrolledText(top_frame,width=1000,wrap="none")
+        self.text = scrolledtext.ScrolledText(top_frame,width=1000,wrap="none")
+
         self.text.pack(side=tk.TOP)
 
         bottom_frame = tk.Frame(self.parent)
@@ -155,9 +72,9 @@ class MyWindow:
 
         self.button = tk.Button(bottom_frame, text='Sort field', command=self.sort_field)
         self.button.pack(side = tk.LEFT)
-        
+
         self.button = tk.Button(bottom_frame, text='Export Data', command=self.export_data)
-        self.button.pack(side = tk.LEFT)  
+        self.button.pack(side = tk.LEFT)
 
     def create_field_list(self):
         if self.df is not None:
@@ -234,10 +151,6 @@ class MyWindow:
     def delete_field(self):
         #make sure there's a dataframe loaded, otherwise, do nothing
         if self.df is not None:
-#            listbox = Listbox(self,self.parent,selectmode='extended')
-#            field_list = self.create_field_list
-#            for item in [field_list]:
-#                listbox.insert(END, item)
             field_name = simpledialog.askstring("Delete Field", "Field to delete?",
                                 parent=self.parent)
             self.df = self.df.drop(columns = field_name)
@@ -279,71 +192,54 @@ class MyWindow:
             elif sort_preference == 'D' or sort_preference == 'd':
                 self.df.sort_values(by=field_name, ascending=False,inplace=True, kind='mergesort')
         self.display()
-        
-        
+
+
     def export_data(self):
         #make sure there's a dataframe loaded, otherwise, do nothing
         if self.df is not None:
             while True:
-                export_name = simpledialog.askstring("Input", "File name: ",
-                    parent=self.parent)            
                 filetype_choice = simpledialog.askstring("Desired format", "Save as CSV, XLSX, or PDF?",
                     parent=self.parent)
                 if filetype_choice == 'CSV' or filetype_choice == 'csv':
+                    #open sys file dialog to save
+                    export_name = fd.asksaveasfilename(filetypes = [('CSV', '*.csv',)])
                     self.df.to_csv(export_name + '.csv', index=None, header=True)
+
                     return
                 elif filetype_choice == 'XLSX' or filetype_choice == 'xlsx':
-                    self.df.to_excel(export_name + '.xlsx', sheet_name='ExportedData', index=False)
+                    #open sys file dialog to save
+                    export_name = fd.asksaveasfilename(filetypes = [('Excel', ('*.xls', '*.xlsx'))])
+                    self.df.to_excel(export_name + '.xlsx', index=False)
+
                     return
                 elif filetype_choice == 'PDF' or filetype_choice == 'pdf':
                     # self.df.to_html('out.html')
+                    export_name = simpledialog.askstring("Input", "File name: ",
+                    parent=self.parent)
                     pdf_name = export_name + '.pdf'
-                    plot = self.df.plot()
-                    plot.get_figure().savefig(pdf_name)
+                    plotted = self.df.plot()
+                    plotted.get_figure().savefig(pdf_name)
                     return
-                # If input file extension does not match    
+                # If input file extension does not match
                 messagebox.showerror("Error", "Invalid filetype. Please try again.", parent=self.parent)
         # If no dataframe has been created yet
         messagebox.showerror("Error", "No data has been loaded yet!", parent=self.parent)
 
-#%%
-
-##%%
-#def load():
-#
-#    name = fd.askopenfilename(filetypes=[('CSV', '*.csv',), ('Excel', ('*.xls', '*.xlsx'))])
-#
-#    if name:
-#        if name.endswith('.csv'):
-#            df = pd.read_csv(name)
-#        else:
-#            df = pd.read_excel(name)
-#
-##            df.filename = name
-#
-##%%
-#def display():
-#    # ask for file if not loaded yet
-#    if df is None:
-#        load()
-#
-#    # display if loaded
-#    if df is not None:
-#        #this just keeps displaying a new head below the last
-#        #we want to remove the existing and then display
-#        df.text.insert('end', df.filename + '\n')
-#        df.text.insert('end', str(df.head()) + '\n')
 
 
 #%%
 # --- main ---
 
 if __name__ == '__main__':
+    pd.get_option('display.max_columns')
+    pd.set_option('display.max_columns',None)
     root = tk.Tk()
     root.title('Notebook Demo')
     root.geometry('650x500')
 
     top = MyWindow(root)
+
+
 
     root.mainloop()
 
