@@ -12,7 +12,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog as fd
 from tkinter import simpledialog
-
+from tkinter import messagebox
 
 #%%
 
@@ -173,6 +173,10 @@ class MyWindow:
         #this will want to pop open another window
         button = tk.Button(bottom_frame, text='Create Template', command=load)
         button.pack(side = tk.LEFT)
+
+        self.button = tk.Button(bottom_frame, text='Move field', command=self.rearrange_field)
+        self.button.pack(side = tk.LEFT)
+
 
 #        field_list = self.create_field_list
 
@@ -380,43 +384,47 @@ class MyWindow:
 
 
 
-#not working 10/27/19 -JPM
+
+#Function Rearrange_field
+#Prompts user to swap two columns
+#Returns a list with new column orders
     def rearrange_field(self):
-        #make sure there's a daaframe loaded, otherwise, do nothing
+        #make sure there's a daaframe loaded; otherwise, do nothing
         if self.df is not None:
+            #Create list of current column orders
+            field_list = self.create_field_list()
+            
+            #Prompt user for the Name of the Column to move, this will continue until the user cancels or inputs a correct CASE SENSITIVE field name
+            #Cancel will return the current field name list
             field_name = simpledialog.askstring("Rearrange Fields", "Field to move?",
                             parent=self.parent)
+           
+            while field_name not in field_list and field_name != None:
+                field_name = simpledialog.askstring("Rearrange Fields", "Field does not exist. Try again", parent=self.parent)
+                if field_name == None:
+                    break
+           
+            if(field_name == None):
+                    return field_list
 
-#            after_field = simpledialog.askstring("Rearrange Fields",
-#                                                     "Put field after (enter field name)",
-#                                                     parent=self.parent)
-            before_field = simpledialog.askstring("Rearrange Fields",
-                                                     "Put before this field (enter field name)",
-                                                     parent=self.parent)
-
-            #get list of fields
-            field_list = self.create_field_list()
-
-
-
-            #find index of column to be moved
-            move_col_index = field_list.index(field_name)
-            before_field_index = field_list.index(before_field)
-            field_list.insert(before_field_index, move_col_index)
-            self.df = self.df[field_list]
-
-#            #make a copy of the column to be moved
-            copy_series = self.df[self.df.columns[field_name]]
-
-#            #delete the column
-#            self.df = self.df.drop(columns = field_name)
-#            #insert the column
-#            self.df.insert(after_field, copy_series, before_field)
-
-
-
-        self.display()
-
+            #Prompt user for the Name of the Column to we wish to move the selected column behind, this will continue until the user cancels or inputs a correct CASE SENSITIVE field name
+            #Cancel will return the current field name list
+            before_field = simpledialog.askstring("Rearrange Fields", "Put before this field (enter field name)", parent=self.parent)
+           
+            while before_field not in field_list and before_field != None:
+               before_field = simpledialog.askstring("Rearrange Fields", "Field does not exist. Try again", parent=self.parent)
+               if before_field == None:
+                    break
+            
+            if(before_field == None):
+                return field_list
+            
+            #Handles moving the column behind the second column and returns a new list of columns
+            if messagebox.askokcancel("Confirm","Move " + field_name + " behind " + before_field):
+                new_list = field_list.copy()
+                new_list.remove(field_name)
+                new_list.insert(new_list.index(before_field) + 1, field_name)
+                return new_list
 
 
 
