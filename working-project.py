@@ -110,7 +110,8 @@ class MyWindow:
                     b.pack(side=tk.BOTTOM,anchor=W)
 
 
-
+                #filter radio button
+                
 
 
 
@@ -118,7 +119,7 @@ class MyWindow:
 
 #create filter box
         #make sure there's a dataframe loaded, otherwise, do nothing
-        if self.df is not None:                    
+        if self.df is not None:
             filter_field = StringVar()
             filter_Entry = Entry(left_frame, text='Field to Filter',textvariable=filter_field).pack(side = tk.BOTTOM)
             filter_val = StringVar()
@@ -127,62 +128,62 @@ class MyWindow:
          #create text area for display, on top of current frame
          self.text = tk.Text(left_frame,width=20, height = 17)
          self.text.pack(side=tk.BOTTOM)
-         
+
          #for the current field, get the contents in a df
          self.df = self.df[self.df[filter_field] == filter_val]
 
-                
+
 #create rearrange box
         #make sure there's a dataframe loaded, otherwise, do nothing
         if self.df is not None:
             #Create list of current column orders
             field_order = self.create_field_list()
-            
+
             first_field = StringVar()
             first_Entry = Entry(left_frame, text='Field to Move',textvariable=first_field).pack(side = tk.BOTTOM)
-            
+
             second_field = StringVar()
             second_Entry = Entry(left_frame, text='Field to place it before?',textvariable=second_field).pack(side = tk.BOTTOM)
 
          #create text area for display, on top of current frame
          self.text = tk.Text(left_frame,width=20, height = 17)
          self.text.pack(side=tk.BOTTOM)
-         
+
          #for the current field, get the contents in a df
          new_order = field_order.copy()
          new_order.remove(field_name)
          new_order.insert(new_order.index(second_field) + 1, first_field)
          self.df = self.df.replace(new_order)
 
-            
+
 #create groupby box
         #make sure there's a dataframe loaded, otherwise, do nothing
-        if self.df is not None:                    
+        if self.df is not None:
             group_val = StringVar()
             filter_Entry = Entry(left_frame, text='Field to Group by',textvariable=group_val).pack(side = tk.BOTTOM)
-            
+
          #create text area for display, on top of current frame
          self.text = tk.Text(left_frame,width=20, height = 17)
          self.text.pack(side=tk.BOTTOM)
-         
+
          #for the current field, get the contents in a df
          self.df = self.df.groupby(group_val).count()
 
 
 #create pivot box
         #make sure there's a dataframe loaded, otherwise, do nothing
-        if self.df is not None:                    
+        if self.df is not None:
             index_chosen = StringVar()
             index_Entry = Entry(left_frame, text='Rows to Pivot',textvariable=index_chosen).pack(side = tk.BOTTOM)
             column_chosen = StringVar()
             column_Entry = Entry(left_frame, text='Columns to Pivot',textvariable=column_chosen).pack(side = tk.BOTTOM)
             pivot_val = StringVar()
-            pivot_Entry = Entry(left_frame, text='Pivot by what values?',textvariable=pivot_val).pack(side = tk.BOTTOM)            
+            pivot_Entry = Entry(left_frame, text='Pivot by what values?',textvariable=pivot_val).pack(side = tk.BOTTOM)
 
          #create text area for display, on top of current frame
          self.text = tk.Text(left_frame,width=20, height = 17)
          self.text.pack(side=tk.BOTTOM)
-         
+
          #for the current field, get the contents in a df
          self.df = pd.pivot_table(self.df, index=index_chosen, columns=column_chosen, values = pivot_val,
                                      dropna=False,aggfunc='count')

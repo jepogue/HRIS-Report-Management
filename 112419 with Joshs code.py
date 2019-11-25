@@ -30,6 +30,7 @@ class MyWindow:
     frame_list = []
     filename = None
     sort_var_list = OrderedDict()
+    filter_var_list = OrderedDict()
     loaded_file = False
 
 #%%
@@ -285,6 +286,9 @@ class MyWindow:
             #rename
 
             #filter
+            frame_name = frame.name.get()
+            filter_var = frame.filter_var.get()
+            self.filter_var_list.update({frame_name:filter_var})
 
 
 
@@ -301,6 +305,7 @@ class MyWindow:
 
         #go through each function
         self.sort_field()
+        self.filter_field()
 
         #print out during testing
         print(self.df)
@@ -385,13 +390,10 @@ class MyWindow:
 
 #%%
     def filter_field(self):
-            #make sure there's a daaframe loaded, otherwise, do nothing
-        if self.df is not None:
-            field_name = simpledialog.askstring("Filter Field", "Field to filter?",
-                                                parent=self.parent)
-            filter_value = simpledialog.askstring("Filter Field", "Filter for what?",
-                                                  parent=self.parent)
-            self.df = self.df[self.df[field_name] == filter_value]
+            #make sure there's a dataframe loaded, otherwise, do nothing
+            for key in self.filter_var_list:
+                filter_value = self.filter_var_list.get(key)
+            self.df = self.df[self.frame_list[filter_var] == filter_value]
 
 #%%
     def rename_field(self):
