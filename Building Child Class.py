@@ -334,8 +334,9 @@ class MyWindow:
     def delete_field(self):
         for item in self.delete_var_list:
             delete = self.delete_var_list.get(item)
-            if(delete == 'D'):
-                self.df = self.df.drop(columns = item)
+            if(item in self.df.columns):
+                if(delete == 'D'):
+                    self.df = self.df.drop(columns = item)
 
 
 
