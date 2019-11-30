@@ -234,21 +234,23 @@ class MyWindow:
 
 #%%
     def preview(self):
-        #first, create all the variable lists
-        if self.loaded_file == False:
-            self.create_var_lists()
+        if self.df is not None:
+            #first, create all the variable lists
+            if self.loaded_file == False:
+                self.create_var_lists()
+            else:
+                #reset loaded file to false so you can make edits and still preview
+                self.loaded_file = False
+
+            #go through each function
+            self.sort_field()
+            self.delete_field()
+
+            #print out during testing
+            print(self.df)
+            self.update_window()
         else:
-            #reset loaded file to false so you can make edits and still preview
-            self.loaded_file = False
-
-        #go through each function
-        self.sort_field()
-        self.delete_field()
-
-        #print out during testing
-        print(self.df)
-        self.update_window()
-        
+            messagebox.showinfo("Error", "Please load data to preview.")
 
     #Update the scrolled frame holding the columns
     def update_window(self): 
