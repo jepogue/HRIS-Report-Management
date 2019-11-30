@@ -28,6 +28,7 @@ class MyWindow:
 
     field_list = []
     frame_list = []
+    interior_frame_list = []
     filename = None
     sort_var_list = OrderedDict()
     delete_var_list = OrderedDict()
@@ -119,44 +120,9 @@ class MyWindow:
             self.filename = name
 
         if self.df is not None:
-            field_list = list(self.df.columns)
-
-
-            #create a new frame with each field
-            for field in field_list:
-                #create new frame instance, pass field name as frame name
-                    #duplicate field names is going to cause issues
-                my_frame = MyFrame()
-                my_frame._init_(field)
-
-                #add to list of frames so you can later iterate
-                self.frame_list.append(my_frame)
-
-                #master=self.parent is causing it to be in botton of frame
-                left_frame = tk.LabelFrame(self.sc.interior(),text=field)
-                left_frame.pack(side=tk.LEFT)
-
-
-                #SORT FUNCTION
-                #sort modes for radio button widget
-                modes = [('Sort Ascending','A'),('Sort Descending','D'),('Do Not Sort','N')]
-                for text, mode in modes:
-                    b = Radiobutton(left_frame, text=text, variable=my_frame.sort_var, value=mode, indicatoron =0)
-                    b.pack(side=tk.BOTTOM,anchor=W)
-
-
-                #FILTER FUNCTION
-
-                #REARRANGE
-
-                #DELETE
-                b = Checkbutton(left_frame, text='Delete', variable = my_frame.delete_var, onvalue = 'D', offvalue = 'N' )
-                b.pack(side=BOTTOM, anchor = W)
+            self.insert_columns()
 
                 #RENAME
-
-
-
 ####################################
 
 
@@ -178,19 +144,60 @@ class MyWindow:
 #                string_var = StringVar()
 #                rename_Entry = Entry(left_frame, text='Rename',textvariable=string_var).pack(side = tk.BOTTOM)
 #
-#                #create delete box
-#                int_var = IntVar()
-#                delete_checkbutton = Checkbutton(left_frame, text='Delete', variable=int_var).pack(side = tk.BOTTOM)
+#         
 #
 
 
                 #create text area for display.  on top of current frame
-                self.text = tk.Text(left_frame,width=20, height = 17)
-                self.text.pack(side=tk.BOTTOM)
-                #for the current field, get the contents in a df
-                col_df = self.df[field]
+               
 
-                self.text.insert('end', str(col_df) + '\n')
+
+
+    def insert_columns(self): 
+        field_list = list(self.df.columns)
+
+            #create a new frame with each field
+        for field in field_list:
+            #create new frame instance, pass field name as frame name
+            #duplicate field names is going to cause issues
+            my_frame = MyFrame()
+            my_frame._init_(field)
+
+            #add to list of frames so you can later iterate
+            self.frame_list.append(my_frame)
+
+            #master=self.parent is causing it to be in botton of frame
+            left_frame = tk.LabelFrame(self.sc.interior(),text=field)
+            left_frame.pack(side=tk.LEFT)
+            self.interior_frame_list.append(left_frame)
+
+
+            #SORT FUNCTION
+            #sort modes for radio button widget
+            modes = [('Sort Ascending','A'),('Sort Descending','D'),('Do Not Sort','N')]
+            for text, mode in modes:
+                b = Radiobutton(left_frame, text=text, variable=my_frame.sort_var, value=mode, indicatoron =0)
+                b.pack(side=tk.BOTTOM,anchor=W)
+
+
+            #FILTER FUNCTION
+
+            #REARRANGE
+
+            #DELETE
+            b = Checkbutton(left_frame, text='Delete', variable = my_frame.delete_var, onvalue = 'D', offvalue = 'N' )
+            b.pack(side=BOTTOM, anchor = W)
+
+            #RENAME
+
+
+            self.text = tk.Text(left_frame,width=20, height = 17)
+            self.text.pack(side=tk.BOTTOM)
+            #for the current field, get the contents in a df
+            col_df = self.df[field]
+
+            self.text.insert('end', str(col_df) + '\n')
+
 
 
 
@@ -240,6 +247,15 @@ class MyWindow:
 
         #print out during testing
         print(self.df)
+        self.update_window()
+        
+
+    #Update the scrolled frame holding the columns
+    def update_window(self): 
+        for frame in self.interior_frame_list:
+            frame.pack_forget()
+        self.insert_columns()
+
 
 
 #%%
@@ -318,6 +334,9 @@ class MyWindow:
             delete = self.delete_var_list.get(item)
             if(delete == 'D'):
                 self.df = self.df.drop(columns = item)
+
+
+
     
 #%%
     def filter_field(self):
@@ -344,10 +363,17 @@ class MyWindow:
 
 #%%
 
-#Function Rearrange_field
+
+    def rearrange_field(self):
+        columns = self.swap_fields()
+        self.df.columns = columns
+        self.update_window()
+
+
+#Function swap_fields
 #Prompts user to swap two columns
 #Returns a list with new column orders
-    def rearrange_field(self):
+    def swap_fields(self):
         #make sure there's a daaframe loaded; otherwise, do nothing
         if self.df is not None:
             #Create list of current column orders
