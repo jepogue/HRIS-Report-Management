@@ -30,6 +30,7 @@ class MyWindow:
     frame_list = []
     filename = None
     sort_var_list = OrderedDict()
+    delete_var_list = OrderedDict()
     loaded_file = False
 
 #%%
@@ -149,6 +150,8 @@ class MyWindow:
                 #REARRANGE
 
                 #DELETE
+                b = Checkbutton(left_frame, text='Delete', variable = my_frame.delete_var, onvalue = 'D', offvalue = 'N' )
+                b.pack(side=BOTTOM, anchor = W)
 
                 #RENAME
 
@@ -211,6 +214,8 @@ class MyWindow:
             self.sort_var_list.update({frame_name:sort_var})
 
             #delete
+            delete_var = frame.delete_var.get()
+            self.delete_var_list.update({frame_name:delete_var})
 
             #rename
 
@@ -231,6 +236,7 @@ class MyWindow:
 
         #go through each function
         self.sort_field()
+        self.delete_field()
 
         #print out during testing
         print(self.df)
@@ -308,12 +314,11 @@ class MyWindow:
 
 #%%
     def delete_field(self):
-        #make sure there's a daaframe loaded, otherwise, do nothing
-        if self.df is not None:
-            field_name = simpledialog.askstring("Delete Field", "Field to delete?",
-                                parent=self.parent)
-            self.df = self.df.drop(columns = field_name)
-
+        for item in self.delete_var_list:
+            delete = self.delete_var_list.get(item)
+            if(delete == 'D'):
+                self.df = self.df.drop(columns = item)
+    
 #%%
     def filter_field(self):
             #make sure there's a daaframe loaded, otherwise, do nothing
@@ -426,6 +431,8 @@ class MyFrame:
         #do all the same as above for each function's variable need
 
         #DELETE FUNCTION
+        self.delete_var = StringVar()
+        self.delete_var.set('N')
 
         #FILTER FUNCTION
 
